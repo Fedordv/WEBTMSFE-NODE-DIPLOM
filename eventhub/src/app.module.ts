@@ -9,16 +9,30 @@ import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import dbConfig from './config/db.config';
 
 @Module({
   imports: [
     AppConfigModule,
-    TypeOrmModule.forRoot ({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      autoLoadEntities: true,
-      synchronize: false,
+     ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+      load: [dbConfig],
     }),
+    
+     TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const db = config.get('db');
+        
+        return {
+          ...db,
+          autoLoadEntities: true,
+        };
+      },
+    }),
+    
     BullModule.forRoot ({
       connection: {
         host: process.env.REDIS_HOST,
