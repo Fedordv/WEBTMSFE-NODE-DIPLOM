@@ -1,0 +1,23 @@
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { Logger, ValidationPipe } from '@nestjs/common';
+// import { Queue } from 'bull';
+// import { getQueueToken } from '@nestjs/bull';
+// import { ExpressAdapter } from '@bull-board/express';
+// import { createBullBoard } from '@bull-board/api';
+// import { BullAdapter } from '@bull-board/api/bullAdapter';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useLogger(app.get(Logger));
+  app.setGlobalPrefix('api');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+  await app.listen(process.env.PORT ?? 3000);
+}
+bootstrap();
