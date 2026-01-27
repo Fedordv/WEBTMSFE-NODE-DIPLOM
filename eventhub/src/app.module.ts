@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller'; 
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
-import { AppConfigModule } from './config/config.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
@@ -14,38 +11,36 @@ import dbConfig from './config/db.config';
 
 @Module({
   imports: [
-    AppConfigModule,
-     ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
       load: [dbConfig],
     }),
-    
-     TypeOrmModule.forRootAsync({
+
+    TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const db = config.get('db');
-        
         return {
           ...db,
           autoLoadEntities: true,
         };
       },
     }),
-    
-    BullModule.forRoot ({
+
+    BullModule.forRoot({
       connection: {
         host: process.env.REDIS_HOST,
         port: Number(process.env.REDIS_PORT),
       },
     }),
+
     AuthModule,
     UsersModule,
     EventsModule,
+    SubscriptionsModule,
     NotificationsModule,
-    SubscriptionsModule
+    AdminModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
