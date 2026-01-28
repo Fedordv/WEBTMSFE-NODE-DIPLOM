@@ -21,7 +21,7 @@ export class User {
   @Column({ default: 'user' })
   role: 'user' | 'admin';
 
-  @OneToMany(() => Event, (event) => event.creator)
+  @OneToMany(() => Event, (event) => event.author)
   events: Event[];
 
   @OneToMany(() => Subscription, (sub) => sub.user)

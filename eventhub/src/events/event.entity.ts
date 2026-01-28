@@ -1,9 +1,16 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn,} from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
+import { Subscription } from '../subscriptions/subscription.entity';
 
-@Entity()
+@Entity('events')
 export class Event {
-  [x: string]: any;
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -18,6 +25,9 @@ export class Event {
 
   @ManyToOne(() => User, (user) => user.events, { eager: true })
   author: User;
+
+  @OneToMany(() => Subscription, (sub) => sub.event)
+  subscriptions: Subscription[];
 
   @CreateDateColumn()
   createdAt: Date;

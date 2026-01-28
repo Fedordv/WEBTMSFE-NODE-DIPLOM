@@ -4,10 +4,11 @@ import { BullModule } from '@nestjs/bullmq';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
-import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { SubscriptionModule } from './subscriptions/subscriptions.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import dbConfig from './config/db.config';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import dbConfig from './config/db.config';
     AuthModule,
     UsersModule,
     EventsModule,
-    SubscriptionsModule,
+    SubscriptionModule,
     NotificationsModule,
     AdminModule,
   ],

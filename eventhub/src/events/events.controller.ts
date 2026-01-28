@@ -2,8 +2,8 @@ import { Controller,  Post, Body, UseGuards,  Get, Param, Delete, Req, } from '@
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { RolesGuard } from "src/common/guards/roles.guard";
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 
 @Controller('events')
 export class EventsController {
