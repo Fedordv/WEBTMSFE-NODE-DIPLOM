@@ -12,16 +12,16 @@ import { Event } from '../events/event.entity';
 @Unique(['user', 'event'])
 export class Subscription {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => User, (user) => user.subscriptions, { onDelete: 'CASCADE' })
-  user: User;
+  user!: User;
 
   @ManyToOne(() => Event, (event) => event.subscriptions, {
     onDelete: 'CASCADE',
   })
-  event: Event;
+  event!: Event;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }

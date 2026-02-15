@@ -4,11 +4,13 @@ import { BullModule } from '@nestjs/bullmq';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
-import { SubscriptionModule } from './subscriptions/subscriptions.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import dbConfig from './config/db.config';
 import { AdminModule } from './admin/admin.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { AdminModule } from './admin/admin.module';
       envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
       load: [dbConfig],
     }),
+
+    ScheduleModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -39,7 +43,7 @@ import { AdminModule } from './admin/admin.module';
     AuthModule,
     UsersModule,
     EventsModule,
-    SubscriptionModule,
+    SubscriptionsModule,
     NotificationsModule,
     AdminModule,
   ],

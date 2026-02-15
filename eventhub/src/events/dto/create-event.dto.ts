@@ -3,12 +3,12 @@ import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
 export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @IsDateString()
-  date: string;
+  date!: string;
 }

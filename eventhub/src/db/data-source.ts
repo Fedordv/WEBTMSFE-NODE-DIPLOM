@@ -16,7 +16,7 @@ export default new DataSource({
 
   entities: [User, Event, Subscription, NotificationLog],
 
-  migrations: [join(__dirname, 'migrations', '*{.ts,.js}')],
+  migrations: ['src/db/migrations/*.ts'],
 
   synchronize: false, 
 });

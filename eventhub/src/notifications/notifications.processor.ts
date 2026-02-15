@@ -19,10 +19,13 @@ export class NotificationsProcessor extends WorkerHost {
       const subs = await this.subsService.findByEvent(eventId);
 
       for (const sub of subs) {
+        // передаем реальный userId
         await this.notificationsService.log(
           eventId,
           'sent',
           `Notification sent to ${sub.user.email}`,
+          'email',
+          sub.user.id, 
         );
       }
     }
@@ -32,6 +35,8 @@ export class NotificationsProcessor extends WorkerHost {
         'system',
         'stats',
         'Stats recalculated',
+        'system',
+        'system', // для системных логов можно передавать какой-то фиктивный ID
       );
     }
 
@@ -40,6 +45,8 @@ export class NotificationsProcessor extends WorkerHost {
         'system',
         'cleanup',
         'Expired events cleaned',
+        'system',
+        'system',
       );
     }
 

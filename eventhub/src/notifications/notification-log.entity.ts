@@ -1,22 +1,25 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 @Entity('notification_logs')
 export class NotificationLog {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
+
+  @Column({})
+  userId!: string;
 
   @Column()
-  userId: string;
+  eventId!: string;
+
+  @Column({ default: 'system' })
+  channel!: string;
 
   @Column()
-  eventId: string;
+  status!: string;
 
-  @Column()
-  channel: string;
-
-  @Column()
-  status: string;
+  @Column({ nullable: true })
+  message?: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }

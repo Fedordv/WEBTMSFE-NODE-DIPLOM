@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Subscription } from './subscription.entity';
 import { Event } from '../events/event.entity';
 import { User } from '../users/user.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class SubscriptionsService {
@@ -12,6 +13,7 @@ export class SubscriptionsService {
     private readonly subRepo: Repository<Subscription>,
     @InjectRepository(Event)
     private readonly eventRepo: Repository<Event>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async subscribe(user: User, eventId: string) {
@@ -19,28 +21,41 @@ export class SubscriptionsService {
     if (!event) throw new NotFoundException('Event not found');
 
     const exist = await this.subRepo.findOne({
-      where: {
-        user: { id: user.id },
-        event: { id: event.id },
-      },
+      where: { user: { id: user.id }, event: { id: event.id } },
     });
 
     if (exist) return exist;
 
-    return this.subRepo.save({ user, event });
+    const subscription = await this.subRepo.save({ user, event });
+
+    await this.notificationsService.log(
+      event.id,
+      'sent',
+      `User ${user.email} subscribed to event ${event.title}`,
+      'email',
+      user.id
+    );
+
+    return subscription;
   }
 
   async unsubscribe(user: User, eventId: string) {
     const sub = await this.subRepo.findOne({
-      where: {
-        user: { id: user.id },
-        event: { id: eventId },
-      },
+      where: { user: { id: user.id }, event: { id: eventId } },
     });
 
     if (!sub) return { unsubscribed: false };
 
     await this.subRepo.delete(sub.id);
+
+    await this.notificationsService.log(
+      eventId,
+      'sent',
+      `User ${user.email} unsubscribed from event`,
+      'email',
+      user.id
+    );
+
     return { unsubscribed: true };
   }
 

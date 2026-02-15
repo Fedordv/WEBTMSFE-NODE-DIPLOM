@@ -12,6 +12,7 @@ import { BullModule } from '@nestjs/bullmq';
             name: 'notifications'
         }),
     ],
+    exports: [TypeOrmModule],
     providers: [ EventsService ],
     controllers: [ EventsController ],
 })

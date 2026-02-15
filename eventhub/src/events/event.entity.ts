@@ -12,23 +12,23 @@ import { Subscription } from '../subscriptions/subscription.entity';
 @Entity('events')
 export class Event {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  title: string;
+  title!: string;
 
   @Column()
-  description: string;
+  description!: string;
 
   @Column({ type: 'timestamptz' })
-  date: Date;
+  date!: Date;
 
   @ManyToOne(() => User, (user) => user.events, { eager: true })
-  author: User;
+  author!: User;
 
   @OneToMany(() => Subscription, (sub) => sub.event)
-  subscriptions: Subscription[];
+  subscriptions!: Subscription[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }
