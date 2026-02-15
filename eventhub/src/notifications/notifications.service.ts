@@ -15,7 +15,7 @@ export class NotificationsService {
     status: string,
     message: string,
     channel: string,
-    userId: string, // теперь строго string
+    userId: string, 
   ) {
     return this.logRepo.save({ eventId, status, message, channel, userId });
   }
