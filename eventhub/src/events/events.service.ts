@@ -6,6 +6,8 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
 import { User } from '../users/user.entity';
+import { Logger } from 'nestjs-pino';
+
 
 @Injectable()
 export class EventsService {
@@ -14,6 +16,7 @@ export class EventsService {
         private eventRepo: Repository<Event>,
         @InjectQueue('notifications')
         private notificationsQueue: Queue,
+        private readonly logger: Logger,
     ) {}
 
     async create(dto: CreateEventDto, author: User) {
@@ -30,6 +33,10 @@ export class EventsService {
             eventId: saved.id,
         });
 
+        this.logger.log(
+         `Event created: ${saved.title} by ${author.email}`,
+        );
+
         return saved;
     }
 
@@ -45,7 +52,12 @@ export class EventsService {
 
     async remove(id: string) {
         const res = await this.eventRepo.delete(id)
-        if(res.affected === 0) throw new NotFoundException('Event Not Found')
+        if (res.affected === 0) {
+        this.logger.warn(`Attempt to delete non-existing event ${id}`);
+        throw new NotFoundException('Event Not Found');
+        }
+
+        this.logger.log(`Event deleted: ${id}`);       
         return { deleted: true }
     }
 }

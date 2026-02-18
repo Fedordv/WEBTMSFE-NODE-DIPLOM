@@ -5,6 +5,8 @@ import { Subscription } from './subscription.entity';
 import { Event } from '../events/event.entity';
 import { User } from '../users/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
+import { Logger } from 'nestjs-pino';
+
 
 @Injectable()
 export class SubscriptionsService {
@@ -14,12 +16,15 @@ export class SubscriptionsService {
     @InjectRepository(Event)
     private readonly eventRepo: Repository<Event>,
     private readonly notificationsService: NotificationsService,
+    private readonly logger: Logger,
   ) {}
 
   async subscribe(user: User, eventId: string) {
     const event = await this.eventRepo.findOne({ where: { id: eventId } });
     if (!event) throw new NotFoundException('Event not found');
-
+    this.logger.log(
+      `User ${user.email} subscribed to event ${event.title}`,
+    );
     const exist = await this.subRepo.findOne({
       where: { user: { id: user.id }, event: { id: event.id } },
     });
@@ -47,6 +52,9 @@ export class SubscriptionsService {
     if (!sub) return { unsubscribed: false };
 
     await this.subRepo.delete(sub.id);
+    this.logger.log(
+      `User ${user.email} unsubscribed from event ${eventId}`,
+    );
 
     await this.notificationsService.log(
       eventId,
@@ -65,4 +73,12 @@ export class SubscriptionsService {
       relations: ['user'],
     });
   }
+
+  async findByUser(userId: string) {
+  return this.subRepo.find({
+    where: { user: { id: userId } },
+    relations: ['event'],
+  });
+ }
+
 }

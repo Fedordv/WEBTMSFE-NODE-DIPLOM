@@ -1,9 +1,10 @@
-import { Controller,  Post, Body, UseGuards,  Get, Param, Delete, Req, } from '@nestjs/common';
+import { Controller,  Post, Body, UseGuards,  Get, Param, Delete, Req, HttpCode, } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
+import { NormalizeEventPipe } from '../common/pipes/normalize-event.pipe';
 
 @Controller('events')
 export class EventsController {
@@ -11,7 +12,8 @@ export class EventsController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    create(@Body() dto: CreateEventDto, @Req() req: any) {
+    @HttpCode(201)
+    create(@Body(NormalizeEventPipe) dto: CreateEventDto, @Req() req: any) {
         return this.eventsService.create(dto, req.user);
     }
 
@@ -21,13 +23,14 @@ export class EventsController {
     }
 
     @Get(':id')
-    findOne(@Param(':id') id: string) {
+    findOne(@Param('id') id: string) {
         return this.eventsService.findOne(id)
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('admin')
     @Delete(':id')
+    @HttpCode(204)
     remove(@Param('id') id: string) {
         return this.eventsService.remove(id);
     }

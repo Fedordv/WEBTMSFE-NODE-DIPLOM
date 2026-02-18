@@ -1,9 +1,41 @@
 import { Controller, Get } from '@nestjs/common';
+import { PinoLogger } from 'nestjs-pino';
+import { DataSource } from 'typeorm';
+import { Public } from './decorators/public.decorator';
 
 @Controller('health')
 export class HealthController {
-    @Get()
-    health() {
-        return { status: 'ok'};
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly logger: PinoLogger,
+  ) {  this.logger.debug('HealthController initialized');}
+
+  @Get('liveness')
+  liveness() {
+    this.logger.debug('Liveness check called');
+    return {
+      status: 'ok',
+      message: 'Service is alive',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Get('readiness')
+  async readiness() {
+    this.logger.debug('Readiness check called');
+    let dbAlive = false;
+
+    try {
+      await this.dataSource.query('SELECT 1');
+      dbAlive = true;
+    } catch {
+      dbAlive = false;
     }
+    return {
+      status: dbAlive ? 'ok' : 'error',
+      dbAlive,
+      timestamp: new Date().toISOString(),
+    };
+  }
 }
+//connect

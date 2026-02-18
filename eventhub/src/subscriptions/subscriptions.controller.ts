@@ -6,6 +6,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Get } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 
@@ -23,4 +24,10 @@ export class SubscriptionsController {
   unsubscribe(@Param('eventId') eventId: string, @Req() req: any) {
     return this.subsService.unsubscribe(req.user, eventId);
   }
+
+  @Get()
+  getMySubscriptions(@Req() req: any) {
+    return this.subsService.findByUser(req.user.id);
+  }
+
 }
